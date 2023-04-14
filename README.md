@@ -15,7 +15,7 @@ Swift: The application is developed using Swift programming language, which is w
 
 SwiftUI: The user interface is built using SwiftUI, which is a modern declarative UI framework provided by Apple for iOS app development. 
 
-# Demo
+# Screenshots
 ![Simulator Screenshot - iPhone 14 - 2023-04-14 at 21 19 19](https://user-images.githubusercontent.com/75687178/232132258-46bcb92c-340f-4c1f-b6a1-07757381211f.png)
 
 ![Simulator Screenshot - iPhone 14 - 2023-04-14 at 21 19 27](https://user-images.githubusercontent.com/75687178/232132292-dd69fd93-8d8b-4f5b-b71c-0091e9a54fad.png)
