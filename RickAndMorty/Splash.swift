@@ -10,7 +10,8 @@ import SwiftUI
 struct Splash: View {
     @Binding var isHomepageActive: Bool
     @State private var isFirstLaunch: Bool = true
-
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     var body: some View {
         ZStack {
             Image("splash")
@@ -18,17 +19,17 @@ struct Splash: View {
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
             
-            Button(action: {
-                   isHomepageActive = true
-                   isFirstLaunch = false
-               }) {
-                   Text(isFirstLaunch ? "Welcome!" : "Hello!")
-                       .font(.system(size: 22, weight: .bold))
-                       .foregroundColor(.black)
-                       .cornerRadius(10)
+                Button(action: {
+                    isHomepageActive = true
+                    isFirstLaunch = false
+                }) {
+                    Text(isFirstLaunch ? "Welcome!" : "Hello!")
+                        .font(.system(size: 22, weight: .bold))
+                        .foregroundColor(.black)
+                        .cornerRadius(10)
+                }
             }
         }
     }
-}
 
 

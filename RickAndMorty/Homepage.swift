@@ -5,46 +5,47 @@ struct Homepage: View {
     
     @ObservedObject private var locationViewModel = LocationViewModel(location: Location(id: 1, name: "Earth", type: "Planet", dimension: "Dimension C-137", residents: ["https://rickandmortyapi.com/api/character/1", "https://rickandmortyapi.com/api/character/2"]))
     @State private var isShowingPreviousPage = false
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     
     var body: some View {
         NavigationView {
-                ZStack {
-                    Image("homepage")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .edgesIgnoringSafeArea(.all)
-                    
+            ZStack {
+                Image("homepage")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .edgesIgnoringSafeArea(.all)
                     VStack {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack {
-                            ForEach(locationViewModel.locations, id: \.name) { location in
-                                Button(action: {locationViewModel.selectedLocation = location}) {
-                                    Text(location.name)
-                                        .foregroundColor(.black)
-                                        .padding(10)
-                                        .background(Color.white)
-                                        .cornerRadius(10)
-                                        .overlay(RoundedRectangle(cornerRadius: 0).stroke(Color.black, lineWidth: 1))
-                                    
-                                }
-                                .sheet(item: $locationViewModel.selectedLocation) { location in
-                                    LocationDetailView(location: location)
+                        Spacer()
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            Spacer()
+                            LazyHStack {
+                                ForEach(locationViewModel.locations, id: \.name) { location in
+                                    Button(action: {locationViewModel.selectedLocation = location}) {
+                                        Text(location.name)
+                                            .foregroundColor(.black)
+                                            .padding(10)
+                                            .background(Color.white)
+                                            .cornerRadius(10)
+                                            .overlay(RoundedRectangle(cornerRadius: 0).stroke(Color.black, lineWidth: 1))
+                                        
+                                    }
+                                    .sheet(item: $locationViewModel.selectedLocation) { location in
+                                        LocationDetailView(location: location)
+                                    }
                                 }
                             }
+                            .padding(.horizontal)
+                            
                         }
-                        .padding(.horizontal)
+                        .onAppear(perform: locationViewModel.fetchLocations)
+                        
+                        Spacer()
                         
                     }
-                    .onAppear(perform: locationViewModel.fetchLocations)
-                    
-                    Spacer()
-                    
                 }
             }
         }
     }
-}
-
 struct LocationDetailView: View {
     @ObservedObject private var locationViewModel: LocationViewModel
     @State private var selectedCharacter: Character? = nil
@@ -141,8 +142,9 @@ struct CharacterDetailView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     Text(character.name)
                         .font(Font.custom("Avenir-Heavy", size: 22))
+                        .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 20)
-                    
+                       
                     URLImage(URL(string: character.image)!) { image in
                         image
                             .resizable()
@@ -153,15 +155,20 @@ struct CharacterDetailView: View {
                     }
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
+                            Spacer()
+                                .frame(width: 20)
                             Text("Status:")
                                 .font(Font.custom("Avenir-Heavy", size: 22))
                             Text(character.status)
                                 .font(Font.custom("Avenir", size: 22))
+                        
                         }
                     }
                     
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
+                            Spacer()
+                                .frame(width: 20)
                             Text("Species:")
                                 .font(Font.custom("Avenir-Heavy", size: 22))
                             Text(character.species)
@@ -171,6 +178,8 @@ struct CharacterDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
+                            Spacer()
+                                .frame(width: 20)
                             Text("Gender:")
                                 .font(Font.custom("Avenir-Heavy", size: 22))
                             Text(character.gender)
@@ -180,6 +189,8 @@ struct CharacterDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
+                            Spacer()
+                                .frame(width: 20)
                             Text("Origin:")
                                 .font(Font.custom("Avenir-Heavy", size: 22))
                             Text(character.origin.name)
@@ -189,28 +200,46 @@ struct CharacterDetailView: View {
                     
                     VStack(alignment: .leading, spacing: 5) {
                         HStack {
+                            Spacer()
+                                .frame(width: 20)
                             Text("Location:")
                                 .font(Font.custom("Avenir-Heavy", size: 22))
                             Text(character.location.name)
                                 .font(Font.custom("Avenir", size: 22))
                         }
                     }
-                    
-                    
-                    Text("Created at: \(formattedDate(dateString: character.created))")
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack {
+                            Spacer()
+                                .frame(width: 20)
+                            Text("Episodes:")
+                                .font(Font.custom("Avenir-Heavy", size: 22))
+                            let episodeNumbers = character.episode.map { $0.components(separatedBy: "/").last ?? "" }
+                            Text(episodeNumbers.joined(separator: ", "))
+                                .font(Font.custom("Avenir", size: 22))
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack {
+                            Spacer()
+                                .frame(width: 20)
+                    Text("Created at (in API):")
+                        .font(Font.custom("Avenir-Heavy", size: 22))
+                         Text(formattedDate(dateString: character.created))
                         .font(Font.custom("Avenir", size: 22))
-                        .multilineTextAlignment(.leading)
                         .padding(.top, 20)
-                    
-                    Spacer()
                         .frame(height: 20)
+                    }
                 }
+            }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 20)
                 .navigationBarItems(leading: backButton)
             }
         }
     }
+        // Back button
         var backButton: some View {
             Button(action: {
                 self.presentationMode.wrappedValue.dismiss()
@@ -224,6 +253,7 @@ struct CharacterDetailView: View {
         //Format date
         func formattedDate(dateString: String) -> String {
             let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
             dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
             if let date = dateFormatter.date(from: dateString) {
                 dateFormatter.dateFormat = "MMM d, yyyy HH:mm"
