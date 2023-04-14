@@ -9,18 +9,26 @@ import SwiftUI
 
 struct Splash: View {
     @Binding var isHomepageActive: Bool
+    @State private var isFirstLaunch: Bool = true
+
     var body: some View {
         ZStack {
             Image("splash")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
                 .edgesIgnoringSafeArea(.all)
-            // Splash
-            Button("Welcome!") {
-                isHomepageActive = true
-                
+            
+            Button(action: {
+                   isHomepageActive = true
+                   isFirstLaunch = false
+               }) {
+                   Text(isFirstLaunch ? "Welcome!" : "Hello!")
+                       .font(.system(size: 22, weight: .bold))
+                       .foregroundColor(.black)
+                       .cornerRadius(10)
             }
         }
     }
 }
+
 

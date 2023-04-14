@@ -7,10 +7,7 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Splash(isHomepageActive: $isHomepageActive) // isHomepageActive -> Splash
-                .tag(0)
-            
-            EmptyView()
-                .tag(1)
+                
         }
         .sheet(isPresented: $isHomepageActive) {
             Homepage()
